@@ -46,43 +46,46 @@
     // Fonction pour dessiner la nourriture
     const drawFood = () => {
         ctx.fillStyle = "red"
-        ctx.roundRect(food.x, food.y, cellSize, cellSize)
         ctx.fillRect(food.x, food.y, cellSize, cellSize)
     }
 
     // Fonction pour mettre à jour la position du serpent
-    const moveSnake = () => {
-        const head = {x: snake[0].x + direction.x * cellSize, y: snake[0].y + direction.y * cellSize}
-        snake.unshift(head);
-
-        // Vérifie si le serpent a mangé la nourriture
-        if (head.x === food.x && head.y === food.y) {
-            score += 10
-            setScore()
-            food = getRandomFoodPosition()// Génère une nouvelle position pour la nourriture
-        } else {
-            snake.pop()// Supprime la dernière partie du serpent si la nourriture n'a pas été mangée
-        }
+const moveSnake = () => {
+    const head = {
+        x: snake[0].x + direction.x * cellSize,
+        y: snake[0].y + direction.y * cellSize
     }
 
-    // Fonction pour vérifier les collisions
-    const checkCollision = () => {
-        const head = snake[0]
+    // Gestion de la téléportation lorsque le serpent sort du canvas
+    if (head.x >= canvas.width) head.x = 0
+    if (head.x < 0) head.x = canvas.width - cellSize
+    if (head.y >= canvas.height) head.y = 0
+    if (head.y < 0) head.y = canvas.height - cellSize
+    snake.unshift(head);
 
-        // Collision avec les murs
-        if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
+    // Vérifie si le serpent a mangé la nourriture
+    if (head.x === food.x && head.y === food.y) {
+        score += 10
+        setScore()
+        food = getRandomFoodPosition();  // Génère une nouvelle position pour la nourriture
+    } else {
+        snake.pop()  // Supprime la dernière partie du serpent si la nourriture n'a pas été mangée
+    }
+}
+
+   // Fonction pour vérifier les collisions
+const checkCollision = () => {
+    const head = snake[0]
+
+    // Collision avec soi-même
+    for (let i = 1; i < snake.length; i++) {
+        if (head.x === snake[i].x && head.y === snake[i].y) {
             return true
         }
-
-        // Collision avec soi-même
-        for (let i = 1; i < snake.length; i++) {
-            if (head.x === snake[i].x && head.y === snake[i].y) {
-                return true
-            }
-        }
-
-        return false;
     }
+
+    return false
+}
 
     // Fonction pour mettre à jour le score
     const setScore = () => {
@@ -155,9 +158,9 @@
     // Fonction pour dessiner la grille
     const drawGrid = () => {
         ctx.beginPath()
-        const pGrid = 4
+        const pGrid = 8
         const grid_line_len = canvasSize - 2 * pGrid
-        const cellSize = grid_line_len / 44
+        const cellSize = 20
 
         for (let i = 0; i <= grid_line_len; i += cellSize) {
             ctx.moveTo(i + pGrid, pGrid);
